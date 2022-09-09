@@ -1,0 +1,43 @@
+{
+  "name": "kobalt-plugin",
+  "version": "1.0.0",
+  "description": "A figma plugin to generate data for kobalt-codegen to read from",
+  "main": "index.js",
+  "scripts": {
+    "tsc": "npm run tsc:plugin && npm run tsc:view",
+    "tsc:plugin": "tsc --noEmit -p src/plugin",
+    "tsc:view": "tsc --noEmit -p src/view",
+    "tsc:watch": "concurrently -n widget,iframe \"npm run tsc:plugin -- --watch --preserveWatchOutput\" \"npm run tsc:view -- --watch --preserveWatchOutput\"",
+    "build": "npm run build:view && npm run build:plugin -- --minify",
+    "build:plugin": "esbuild src/plugin/code.ts --bundle --outfile=dist/code.js",
+    "build:view": "npx vite build --minify esbuild --emptyOutDir=false",
+    "build:watch": "concurrently -n widget,iframe \"npm run build:plugin -- --watch\" \"npm run build:view -- --watch\"",
+    "dev": "concurrently -n tsc,build,vite 'npm:tsc:watch' 'npm:build:watch' 'vite'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/corteki/kobalt-plugin.git"
+  },
+  "keywords": [],
+  "author": "Tim Alaerts",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/corteki/kobalt-plugin/issues"
+  },
+  "homepage": "https://github.com/corteki/kobalt-plugin#readme",
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.51.0",
+    "@types/node": "^18.7.16",
+    "@types/react-dom": "^18.0.6",
+    "@vitejs/plugin-react": "^2.1.0",
+    "concurrently": "^7.4.0",
+    "esbuild": "^0.15.7",
+    "typescript": "^4.8.3",
+    "vite": "^3.1.0",
+    "vite-plugin-singlefile": "^0.11.1"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
