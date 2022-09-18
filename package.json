@@ -9,7 +9,7 @@
     "tsc:view": "tsc --noEmit -p src/view",
     "tsc:watch": "concurrently -n widget,iframe \"npm run tsc:plugin -- --watch --preserveWatchOutput\" \"npm run tsc:view -- --watch --preserveWatchOutput\"",
     "build": "npm run build:view && npm run build:plugin -- --minify",
-    "build:plugin": "esbuild src/plugin/code.ts --bundle --outfile=dist/code.js",
+    "build:plugin": "esbuild src/plugin/controller.ts --bundle --outfile=dist/controller.js",
     "build:view": "npx vite build --minify esbuild --emptyOutDir=false",
     "build:watch": "concurrently -n widget,iframe \"npm run build:plugin -- --watch\" \"npm run build:view -- --watch\"",
     "dev": "concurrently -n tsc,build,vite 'npm:tsc:watch' 'npm:build:watch' 'vite'"
@@ -29,6 +29,7 @@
     "@figma/plugin-typings": "^1.51.0",
     "@types/node": "^18.7.16",
     "@types/react-dom": "^18.0.6",
+    "@types/styled-components": "^5.1.26",
     "@vitejs/plugin-react": "^2.1.0",
     "concurrently": "^7.4.0",
     "esbuild": "^0.15.7",
@@ -37,7 +38,12 @@
     "vite-plugin-singlefile": "^0.11.1"
   },
   "dependencies": {
+    "classnames": "^2.3.1",
+    "formik": "^2.2.9",
+    "observable-hooks": "^4.2.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "rxjs": "^7.5.6",
+    "styled-components": "^5.3.5"
   }
 }
