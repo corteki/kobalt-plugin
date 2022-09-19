@@ -2,10 +2,12 @@ import { tap, of, mergeMap, iif, throwError } from "rxjs";
 import { CommandMessage, EventMessage, MessageType } from "../core/message";
 import { PluginCommand } from "../core/plugin-command";
 import { PluginEvent } from "../core/plugin-event";
+import { createNamespacePipeline } from "./pipelines/create-namespace-pipeline";
 import { pluginLoadedPipeline } from "./pipelines/plugin-loaded-pipeline";
 import { retreiveNamespacesPipeline } from "./pipelines/retreive-namespaces-pipeline";
 import { retreivePagesPipeline } from "./pipelines/retreive-pages-pipeline";
 import { selectPagePipeline } from "./pipelines/select-page-pipeline";
+import type { CreateNamespacePayload } from "./types";
 
 figma.showUI(__html__, {
   title: "Kobalt",
@@ -51,7 +53,7 @@ const handleCommandMessage = (message: CommandMessage) =>
         }
 
         case PluginCommand.Create.Namespace: {
-          // createNamespacePipeline()
+          createNamespacePipeline(message.payload as CreateNamespacePayload);
         }
         default: {
           throwError(
