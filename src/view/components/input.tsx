@@ -12,16 +12,14 @@ export const Input = styled.input`
   background-color: transparent;
   box-sizing: border-box;
   position: relative;
-  height: 28px;
+  height: ${({ theme }) => theme.sizes.xxl}px;
   width: 100%;
   min-width: 0;
-  margin: 1px 0;
+  margin-bottom: ${({ theme }) => theme.sizes.lg}px;
   padding: 0 0 0 7px;
   padding-right: 7px;
   background-clip: padding-box;
   :focus-visible {
-    height: 30px;
-    margin: 0;
     border: 1px solid ${({ theme }) => theme.color.border.selected.value};
     outline: 1px solid ${({ theme }) => theme.color.border.selected.value};
     outline-offset: -2px;

@@ -18,3 +18,5 @@ export type CommandMessage<T = unknown> = Message<MessageType.Command, T> & {
 export type EventMessage<T = unknown> = Message<MessageType.Event, T> & {
   event: PluginEvent;
 };
+
+export type PluginMessage<T> = { pluginMessage: T };

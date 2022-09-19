@@ -26,6 +26,8 @@ const Button = styled.button`
   padding: 0 11px;
   background-color: transparent;
   box-sizing: border-box;
+  border: 1px solid transparent;
+  outline: none;
   border-radius: 6px;
   cursor: default;
   user-select: none;
@@ -33,17 +35,15 @@ const Button = styled.button`
 
 export const PrimaryButton = styled(Button)`
   background-color: ${({ theme }) => theme.color.bg.brand.value};
+  color: ${({ theme }) => theme.color.text.onbrand.value};
 `;
 
 export const SecondaryButton = styled(Button)`
   background-color: ${({ theme }) => theme.color.bg.brand.secondary.value};
+  color: ${({ theme }) => theme.color.text.onbrand.secondary.value};
 `;
 
 export const TertiaryButton = styled(Button)`
   background-color: ${({ theme }) => theme.color.bg.brand.tertiary.value};
+  color: ${({ theme }) => theme.color.text.onbrand.tertiary.value};
 `;
-// export const Button = ({ variant, children, onClick }: ButtonProps) => (
-//   <button className={`button ${map[variant]}`} onClick={onClick}>
-//     {children}
-//   </button>
-// );

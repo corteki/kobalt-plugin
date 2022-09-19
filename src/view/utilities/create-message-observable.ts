@@ -1,5 +1,17 @@
-import { fromEvent } from "rxjs";
-import { CommandMessage, EventMessage, MessageType } from "../../core/message";
+import {
+  distinctUntilChanged,
+  filter,
+  fromEvent,
+  map,
+  OperatorFunction,
+  tap,
+} from "rxjs";
+import {
+  CommandMessage,
+  EventMessage,
+  MessageType,
+  PluginMessage,
+} from "../../core/message";
 import { PluginCommand } from "../../core/plugin-command";
 import { PluginEvent } from "../../core/plugin-event";
 
@@ -21,5 +33,16 @@ export const sendEvent = <T>(event: PluginEvent, payload?: T) => {
   parent.postMessage({ pluginMessage: message }, "*");
 };
 
-export const createMessageObservable = <T>() =>
-  fromEvent<MessageEvent<T>>(window, "message");
+export const createMessageObservable = <T>(
+  handleEvents: OperatorFunction<EventMessage<T>, void>,
+  events: PluginEvent[]
+) =>
+  fromEvent<MessageEvent<PluginMessage<EventMessage<T>>>>(
+    window,
+    "message"
+  ).pipe(
+    map((message) => message.data.pluginMessage),
+    tap((message) => console.log(JSON.stringify(message, null, 2))),
+    filter((message) => events.includes(message.event)),
+    handleEvents
+  );

@@ -1,18 +1,17 @@
 import { defaultIfEmpty, filter, of, tap } from "rxjs";
 import { sendNoneSelected, sendPageSelected } from "./events";
-import { collectPages, pages } from "./pages";
+import { collectPages, empty, pages } from "./pages";
 import { PLUGIN_DATA_KEY } from "./plugin-data";
 
 const pageWithValidPluginData = (page: PageNode) => {
   try {
-    JSON.parse(page.getPluginData(PLUGIN_DATA_KEY));
+    const data = page.getPluginData(PLUGIN_DATA_KEY);
+    JSON.parse(data);
     return true;
   } catch (error) {
     return false;
   }
 };
-
-const empty = (page: PageNode | null) => page === null;
 
 export const pluginLoadedPipeline = () =>
   of(pages)

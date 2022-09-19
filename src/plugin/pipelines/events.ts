@@ -26,3 +26,11 @@ export const sendPagesRetreived = tap((pages: string[]) =>
     payload: pages,
   } as EventMessage<string[]>)
 );
+
+export const sendNamespacesRetreived = tap((namespaces: string[]) =>
+  figma.ui.postMessage({
+    type: MessageType.Event,
+    event: PluginEvent.Retreived.Namespaces,
+    payload: namespaces,
+  } as EventMessage<string[]>)
+);

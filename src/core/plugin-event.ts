@@ -1,18 +1,20 @@
-enum Loaded {
+export enum Loaded {
   Plugin = "plugin-loaded",
 }
 
-enum Retreived {
+export enum Retreived {
   Pages = "pages-retreived",
+  Namespaces = "namespaces-retreived",
+  Tokens = "tokens-retreived",
 }
 
-enum Created {
+export enum Created {
   Page = "page-created",
   Namespace = "namespace-created",
   Token = "token-created",
 }
 
-enum Selected {
+export enum Selected {
   Page = "page-selected",
   None = "none-selected",
 }
