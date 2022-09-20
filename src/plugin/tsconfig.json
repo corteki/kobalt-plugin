@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "ESNext",
     "moduleResolution": "node",
-    "lib": ["es6"],
+    "noFallthroughCasesInSwitch": true,
+    "lib": ["ES2017"],
     "strict": true,
     "typeRoots": ["../../node_modules/@figma"]
   }

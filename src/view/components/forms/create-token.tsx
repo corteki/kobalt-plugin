@@ -6,20 +6,25 @@ import { Input } from "../input";
 import { Stack } from "../stack";
 import { FormContainer } from "./form-container";
 
-export const CreateNamespace = () => {
+type CreateTokenProps = {
+  namespace: string;
+};
+
+export const CreateToken = ({ namespace }: CreateTokenProps) => {
   return (
     <Formik
-      initialValues={{ namespace: "" }}
+      initialValues={{ token: { name: "", value: "" }, namespace }}
       onSubmit={(values, { setSubmitting, resetForm }) => {
-        sendCommand(PluginCommand.Create.Namespace, values.namespace);
+        sendCommand(PluginCommand.Create.Token, values);
         setSubmitting(false);
         resetForm();
       }}
     >
       <FormContainer>
         <Stack>
-          <Field name="namespace" type="text" as={Input} />
-          <PrimaryButton type="submit">save</PrimaryButton>
+          <Field name="token.name" type="text" as={Input} />
+          <Field name="token.value" type="text" as={Input} />
+          <PrimaryButton type="submit">add</PrimaryButton>
         </Stack>
       </FormContainer>
     </Formik>

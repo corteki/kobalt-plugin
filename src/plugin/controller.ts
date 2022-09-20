@@ -3,11 +3,12 @@ import { CommandMessage, EventMessage, MessageType } from "../core/message";
 import { PluginCommand } from "../core/plugin-command";
 import { PluginEvent } from "../core/plugin-event";
 import { createNamespacePipeline } from "./pipelines/create-namespace-pipeline";
+import { createTokenPipeline } from "./pipelines/create-token-pipeline";
 import { pluginLoadedPipeline } from "./pipelines/plugin-loaded-pipeline";
 import { retreiveNamespacesPipeline } from "./pipelines/retreive-namespaces-pipeline";
 import { retreivePagesPipeline } from "./pipelines/retreive-pages-pipeline";
 import { selectPagePipeline } from "./pipelines/select-page-pipeline";
-import type { CreateNamespacePayload } from "./types";
+import type { CreateTokenPayload } from "../core/types";
 
 figma.showUI(__html__, {
   title: "Kobalt",
@@ -50,10 +51,17 @@ const handleCommandMessage = (message: CommandMessage) =>
 
         case PluginCommand.Retreive.Namespaces: {
           retreiveNamespacesPipeline(message.payload as string);
+          break;
         }
 
         case PluginCommand.Create.Namespace: {
-          createNamespacePipeline(message.payload as CreateNamespacePayload);
+          createNamespacePipeline(message.payload as string);
+          break;
+        }
+
+        case PluginCommand.Create.Token: {
+          createTokenPipeline(message.payload as CreateTokenPayload);
+          break;
         }
         default: {
           throwError(
@@ -69,6 +77,7 @@ const handleCommandMessage = (message: CommandMessage) =>
 figma.ui.onmessage = (e: EventMessage | CommandMessage) =>
   of(e)
     .pipe(
+      tap(console.log),
       mergeMap((message) =>
         iif(
           () => message.type === MessageType.Event,

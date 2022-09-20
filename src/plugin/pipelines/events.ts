@@ -1,6 +1,7 @@
 import { of, tap } from "rxjs";
 import { EventMessage, MessageType } from "../../core/message";
 import { PluginEvent } from "../../core/plugin-event";
+import { Namespace, NamespaceMap, Token } from "../../core/types";
 
 export const sendPageSelected = (page: PageNode) =>
   of(
@@ -27,10 +28,10 @@ export const sendPagesRetreived = tap((pages: string[]) =>
   } as EventMessage<string[]>)
 );
 
-export const sendNamespacesRetreived = tap((namespaces: string[]) =>
+export const sendNamespacesRetreived = tap((namespaces: Namespace[]) =>
   figma.ui.postMessage({
     type: MessageType.Event,
     event: PluginEvent.Retreived.Namespaces,
     payload: namespaces,
-  } as EventMessage<string[]>)
+  } as EventMessage<Namespace[]>)
 );

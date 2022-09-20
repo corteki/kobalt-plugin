@@ -1,7 +1,6 @@
 enum Retreive {
   Pages = "retreive-pages",
   Namespaces = "retreive-namespaces",
-  Tokens = "retreive-tokens",
 }
 
 enum Select {

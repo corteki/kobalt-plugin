@@ -1,11 +1,14 @@
 import { useNamespaces } from "../hooks/use-namespaces";
 import { Accordion } from "./accordion";
 import { Error } from "./error";
-import { CreateNamespace } from "./forms/create-namespace";
+import { CreateToken } from "./forms/create-token";
+
 import { NamespacesSkeleton } from "./namespaces-skeleton";
 
 export const Namespaces = () => {
   const { data, loading, error } = useNamespaces();
+
+  console.log(data);
 
   if (error) {
     return <Error>{error}</Error>;
@@ -21,10 +24,15 @@ export const Namespaces = () => {
 
   return (
     <>
-      <CreateNamespace />
-      {data?.map((namespace) => (
+      {data.map(({ namespace, tokens }) => (
         <Accordion title={namespace} key={namespace}>
-          <p>content here...</p>
+          <CreateToken namespace={namespace} />
+          {tokens.map(({ name, value }) => (
+            <>
+              <p>{name}</p>
+              <p>{value}</p>
+            </>
+          ))}
         </Accordion>
       ))}
     </>
