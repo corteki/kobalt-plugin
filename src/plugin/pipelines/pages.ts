@@ -1,5 +1,5 @@
 import { mergeMap, map } from "rxjs";
-import { PLUGIN_DATA_KEY } from "./plugin-data";
+import { THEME } from "./plugin-data";
 
 export const pages = figma.root.findAllWithCriteria({ types: ["PAGE"] });
 export const collectPages = mergeMap((pages: PageNode[]) => pages);
@@ -13,7 +13,7 @@ export const empty = (page: PageNode | null) => page === null;
 
 export const pageWithValidPluginData = (page: PageNode) => {
   try {
-    const data = page.getPluginData(PLUGIN_DATA_KEY);
+    const data = page.getPluginData(THEME);
     JSON.parse(data);
     return true;
   } catch (error) {

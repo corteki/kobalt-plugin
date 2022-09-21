@@ -23,7 +23,7 @@ const handleEvents = map((message: EventMessage<string>) => {
     case PluginEvent.Selected.Page: {
       if (message.payload) {
         data$.next(message.payload);
-        sendCommand(PluginCommand.Retreive.Namespaces, message.payload);
+        sendCommand(PluginCommand.Retreive.Namespaces);
       }
       loading$.next(false);
       break;

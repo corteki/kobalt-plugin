@@ -8,7 +8,15 @@ import { pluginLoadedPipeline } from "./pipelines/plugin-loaded-pipeline";
 import { retreiveNamespacesPipeline } from "./pipelines/retreive-namespaces-pipeline";
 import { retreivePagesPipeline } from "./pipelines/retreive-pages-pipeline";
 import { selectPagePipeline } from "./pipelines/select-page-pipeline";
-import type { CreateTokenPayload } from "../core/types";
+import type {
+  CreateNamespaceInput,
+  CreateTokenInput,
+  DeleteTokenInput,
+  SelectPageInput,
+  UpdateTokenInput,
+} from "../core/models/inputs";
+import { updateTokenPipeline } from "./pipelines/update-token-pipeline";
+import { deleteTokenPipeline } from "./pipelines/delete-token-pipeline";
 
 figma.showUI(__html__, {
   title: "Kobalt",
@@ -45,22 +53,31 @@ const handleCommandMessage = (message: CommandMessage) =>
         }
 
         case PluginCommand.Select.Page: {
-          selectPagePipeline(message.payload as string);
+          selectPagePipeline(message.payload as SelectPageInput);
           break;
         }
 
         case PluginCommand.Retreive.Namespaces: {
-          retreiveNamespacesPipeline(message.payload as string);
+          retreiveNamespacesPipeline();
           break;
         }
 
         case PluginCommand.Create.Namespace: {
-          createNamespacePipeline(message.payload as string);
+          createNamespacePipeline(message.payload as CreateNamespaceInput);
           break;
         }
 
         case PluginCommand.Create.Token: {
-          createTokenPipeline(message.payload as CreateTokenPayload);
+          createTokenPipeline(message.payload as CreateTokenInput);
+          break;
+        }
+
+        case PluginCommand.Update.Token: {
+          updateTokenPipeline(message.payload as UpdateTokenInput);
+          break;
+        }
+        case PluginCommand.Delete.Token: {
+          deleteTokenPipeline(message.payload as DeleteTokenInput);
           break;
         }
         default: {

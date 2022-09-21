@@ -1,7 +1,16 @@
 import styled from "styled-components";
 
-export const Stack = styled.div`
+type StackProps = {
+  direction?: "vertical" | "horizontal";
+};
+
+const directionMap = {
+  vertical: "column",
+  horizontal: "row",
+};
+
+export const Stack = styled.div<StackProps>`
   display: flex;
-  flex-direction: column;
+  flex-direction: ${({ direction = "vertical" }) => directionMap[direction]};
   justify-content: space-between;
 `;

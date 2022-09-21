@@ -1,7 +1,11 @@
 import { of, tap } from "rxjs";
 import { EventMessage, MessageType } from "../../core/message";
 import { PluginEvent } from "../../core/plugin-event";
-import { Namespace, NamespaceMap, Token } from "../../core/types";
+import {
+  NamespaceOutput,
+  PageOutput,
+  PagesOutput,
+} from "../../core/models/outputs";
 
 export const sendPageSelected = (page: PageNode) =>
   of(
@@ -9,7 +13,7 @@ export const sendPageSelected = (page: PageNode) =>
       type: MessageType.Event,
       event: PluginEvent.Selected.Page,
       payload: page.name,
-    } as EventMessage<string>)
+    } as EventMessage<PageOutput>)
   );
 
 export const sendNoneSelected = () =>
@@ -20,18 +24,18 @@ export const sendNoneSelected = () =>
     } as EventMessage)
   );
 
-export const sendPagesRetreived = tap((pages: string[]) =>
+export const sendPagesRetreived = tap((pages: PagesOutput) =>
   figma.ui.postMessage({
     type: MessageType.Event,
     event: PluginEvent.Retreived.Pages,
     payload: pages,
-  } as EventMessage<string[]>)
+  } as EventMessage<PagesOutput>)
 );
 
-export const sendNamespacesRetreived = tap((namespaces: Namespace[]) =>
+export const sendNamespacesRetreived = tap((namespaces: NamespaceOutput[]) =>
   figma.ui.postMessage({
     type: MessageType.Event,
     event: PluginEvent.Retreived.Namespaces,
     payload: namespaces,
-  } as EventMessage<Namespace[]>)
+  } as EventMessage<NamespaceOutput[]>)
 );

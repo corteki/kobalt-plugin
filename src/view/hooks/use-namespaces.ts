@@ -1,15 +1,15 @@
 import { Subject, map, BehaviorSubject } from "rxjs";
 import { EventMessage } from "../../core/message";
 import { PluginEvent } from "../../core/plugin-event";
-import { Namespace } from "../../core/types";
+import { NamespaceOutput } from "../../core/models/outputs";
 import { createMessageObservable } from "../utilities/create-message-observable";
 import { createPluginSubscription } from "../utilities/create-plugin-subscription";
 
-const data$ = new Subject<Namespace[] | undefined>();
+const data$ = new Subject<NamespaceOutput[] | undefined>();
 const error$ = new Subject<string | undefined>();
 const loading$ = new BehaviorSubject(false);
 
-const handleEvents = map((message: EventMessage<Namespace[]>) => {
+const handleEvents = map((message: EventMessage<NamespaceOutput[]>) => {
   loading$.next(true);
   switch (message.event) {
     case PluginEvent.Retreived.Namespaces: {
@@ -29,7 +29,7 @@ const handleEvents = map((message: EventMessage<Namespace[]>) => {
 
 export const useNamespaces = () =>
   createPluginSubscription(
-    createMessageObservable<Namespace[]>(handleEvents, [
+    createMessageObservable<NamespaceOutput[]>(handleEvents, [
       PluginEvent.Retreived.Namespaces,
     ]),
     data$,

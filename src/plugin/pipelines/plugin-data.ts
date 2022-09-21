@@ -1,54 +1,164 @@
 import { map, tap } from "rxjs";
-import type { Namespace, NamespaceMap, Token } from "../../core/types";
-export const PLUGIN_DATA_KEY = "theme";
+import { nanoid as createId } from "nanoid/non-secure";
+import type {
+  TokenMapPluginData,
+  NamespaceMapPluginData,
+  TokenPluginData,
+  NamespaceTypeMapPluginData,
+} from "../../core/models/plugin-data";
+import type {
+  TokenIdentityOutput,
+  NamespaceOutput,
+} from "../../core/models/outputs";
+import {
+  AddNamespaceStream,
+  AddTokenStream,
+  DeleteTokenStream,
+  NamespaceStream,
+  UpdateTokenStream,
+} from "../../core/models/streams";
+
+const DEFAULT_PLUGIN_DATA = "{}";
+export const THEME = "theme";
+export const NAMESPACE_TYPES = "namespace-types";
+export const TOKEN_REFS = "token-refs";
 
 export const initializePluginData = tap((page: PageNode) => {
-  page.setPluginData(PLUGIN_DATA_KEY, "{}");
+  page.setPluginData(THEME, DEFAULT_PLUGIN_DATA);
+  page.setPluginData(NAMESPACE_TYPES, DEFAULT_PLUGIN_DATA);
+  page.setPluginData(TOKEN_REFS, DEFAULT_PLUGIN_DATA);
 });
 
-export const getPluginDataAsJson = map(
-  (page: PageNode): NamespaceMap =>
-    JSON.parse(page.getPluginData(PLUGIN_DATA_KEY))
+const getAsJson = (page: PageNode, dataKey: string) =>
+  JSON.parse(page.getPluginData(dataKey));
+
+export const getThemeAsJson = map(
+  (page: PageNode): NamespaceMapPluginData => getAsJson(page, THEME)
 );
 
-type AddNamespaceStream = [
-  page: PageNode,
-  data: NamespaceMap,
-  namespace: string
-];
-type AddTokenStream = [
-  page: PageNode,
-  data: NamespaceMap,
-  namespace: string,
-  token: Token
-];
+export const getNamespaceTypesAsJson = map(
+  (page: PageNode): NamespaceTypeMapPluginData =>
+    getAsJson(page, NAMESPACE_TYPES)
+);
 
-export const addNamespace = map((stream: AddNamespaceStream): NamespaceMap => {
-  const [page, data, namespace] = stream;
-  const pluginData = Object.assign({}, data, { [namespace]: {} });
-  page.setPluginData(PLUGIN_DATA_KEY, JSON.stringify(pluginData));
-  return pluginData;
-});
+export const getTokenRefsAsJson = map(
+  (page: PageNode): NamespaceTypeMapPluginData => getAsJson(page, TOKEN_REFS)
+);
 
-export const addToken = map((stream: AddTokenStream): NamespaceMap => {
-  const [page, data, namespace, token] = stream;
-  const tokens = Object.assign({}, data[namespace], {
-    [token.name]: token.value,
-  });
-  const pluginData = Object.assign({}, data, { [namespace]: tokens });
-  page.setPluginData(PLUGIN_DATA_KEY, JSON.stringify(pluginData));
-  return pluginData;
-});
+export const addNamespace = map(
+  (stream: AddNamespaceStream<PageNode>): NamespaceStream => {
+    const [page, theme, namespaceTypes, { namespace, type }] = stream;
+    const namespaceTypeMapPluginData: NamespaceTypeMapPluginData =
+      Object.assign({}, namespaceTypes, { [namespace]: type });
+    const namespaceMapPluginData: NamespaceMapPluginData = Object.assign(
+      {},
+      theme,
+      { [namespace]: {} }
+    );
+    page.setPluginData(THEME, JSON.stringify(namespaceMapPluginData));
+    page.setPluginData(
+      NAMESPACE_TYPES,
+      JSON.stringify(namespaceTypeMapPluginData)
+    );
+    return { namespaceMapPluginData, namespaceTypeMapPluginData };
+  }
+);
 
-export const getNamespaces = map((data: NamespaceMap): Namespace[] => {
-  return Object.entries(data).reduce<Namespace[]>((acc, [namespace, value]) => {
-    acc.push({
-      namespace,
-      tokens: Object.entries(value).reduce<Token[]>((acc, [name, value]) => {
-        acc.push({ name, value });
-        return acc;
-      }, []),
+export const collectNamespaceStream = map(
+  ([namespaceMapPluginData, namespaceTypeMapPluginData]): NamespaceStream => ({
+    namespaceMapPluginData,
+    namespaceTypeMapPluginData,
+  })
+);
+
+export const addToken = map(
+  (stream: AddTokenStream<PageNode>): NamespaceStream => {
+    const [page, theme, namespaceTypes, namespace, token] = stream;
+    const tokenPluginData: TokenPluginData = token;
+
+    const tokenMapPluginData: TokenMapPluginData = {
+      [createId()]: tokenPluginData,
+    };
+
+    const mergedTokenMapPluginData = Object.assign(
+      {},
+      theme[namespace],
+      tokenMapPluginData
+    );
+    const savedTokenMapPluginData = Object.assign({}, theme, {
+      [namespace]: mergedTokenMapPluginData,
     });
-    return acc;
-  }, []);
-});
+    page.setPluginData(THEME, JSON.stringify(savedTokenMapPluginData));
+    return {
+      namespaceMapPluginData: savedTokenMapPluginData,
+      namespaceTypeMapPluginData: namespaceTypes,
+    };
+  }
+);
+
+export const updateToken = map(
+  (stream: UpdateTokenStream<PageNode>): NamespaceStream => {
+    const [page, theme, namespaceType, namespace, token] = stream;
+    const tokenMapPluginData: TokenMapPluginData = Object.assign(
+      {},
+      theme[namespace],
+      {
+        [token.id]: {
+          name: token.name,
+          value: token.value,
+        },
+      }
+    );
+    const namespaceMapPluginData: NamespaceMapPluginData = {
+      [namespace]: tokenMapPluginData,
+    };
+    const savedNamespaceMapPluginData = Object.assign(
+      {},
+      theme,
+      namespaceMapPluginData
+    );
+    page.setPluginData(THEME, JSON.stringify(savedNamespaceMapPluginData));
+    return {
+      namespaceMapPluginData: savedNamespaceMapPluginData,
+      namespaceTypeMapPluginData: namespaceType,
+    };
+  }
+);
+
+export const deleteToken = map(
+  (stream: DeleteTokenStream<PageNode>): NamespaceStream => {
+    const [page, theme, namespaceTypes, namespace, id] = stream;
+    delete theme[namespace][id];
+    page.setPluginData(THEME, JSON.stringify(theme));
+    return {
+      namespaceMapPluginData: theme,
+      namespaceTypeMapPluginData: namespaceTypes,
+    };
+  }
+);
+
+export const getNamespaces = map(
+  ({
+    namespaceMapPluginData,
+    namespaceTypeMapPluginData,
+  }: NamespaceStream): NamespaceOutput[] => {
+    return Object.entries(namespaceMapPluginData).reduce<NamespaceOutput[]>(
+      (acc, [namespace, value]) => {
+        const type = namespaceTypeMapPluginData[namespace];
+        acc.push({
+          namespace,
+          type,
+          tokens: Object.entries(value).reduce<TokenIdentityOutput[]>(
+            (acc, [id, { name, value }]) => {
+              acc.push({ id, name, value });
+              return acc;
+            },
+            []
+          ),
+        });
+        return acc;
+      },
+      []
+    );
+  }
+);

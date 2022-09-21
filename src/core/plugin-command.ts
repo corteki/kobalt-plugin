@@ -13,6 +13,14 @@ enum Create {
   Token = "create-token",
 }
 
+enum Update {
+  Token = "update-token",
+}
+
+enum Delete {
+  Token = "delete-token",
+}
+
 export class PluginCommand {
   static get Retreive() {
     return Retreive;
@@ -22,5 +30,11 @@ export class PluginCommand {
   }
   static get Create() {
     return Create;
+  }
+  static get Update() {
+    return Update;
+  }
+  static get Delete() {
+    return Delete;
   }
 }
